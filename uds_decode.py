@@ -1,4 +1,3 @@
-
 UDS_SID = {
     0x10: "Diagnostic Session Control",
     0x3E: "Tester Present",
@@ -13,8 +12,8 @@ UDS_SID = {
     0x23: "Read Memory By Address",
     0x2E: "Write Data By Identifier",
     0x3D: "Write Memory By Address",
-    0x2A: "Read Daty By Periodic Identifier",
-    0x14: "Clear Diagnostic Inforamtion",
+    0x2A: "Read Data By Periodic Identifier",
+    0x14: "Clear Diagnostic Information",
     0x19: "Read DTC Information",
     0x2F: "Input Output Control By Identifier",
     0x31: "Routine Control",
@@ -27,9 +26,9 @@ UDS_SID = {
 UDS_NRC = {
     0x10: "General reject",
     0x11: "Service not supported",
-    0x12: "Subfuntion not supported",
+    0x12: "Subfunction not supported",
     0x13: "Incorrect message length/invalid format",
-    0x14: "Response to long",
+    0x14: "Response too long",
     0x21: "Busy Repeat Request",
     0x22: "Conditions not correct",
     0x24: "Request sequence Error",
@@ -47,33 +46,33 @@ UDS_NRC = {
     0x78: "Response pending",
     0x7E: "Subfunction not supported in active session",
     0x7F: "Service not supported in active session",
-    0x81: "Rpm to high",
-    0x82: "Rpm to low",
+    0x81: "RPM too high",
+    0x82: "RPM too low",
     0x83: "Engine is running",
     0x84: "Engine is not running",
-    0x85: "Engine runtime to low",
-    0x86: "Temperature to high",
-    0x87: "Temperature to low",
-    0x88: "Vehicle speed to high",
-    0x89: "Vehicle speed to low",
-    0x8A: "Throttle pedal to high",
-    0x8B: "Throttle pedal to low",
+    0x85: "Engine runtime too low",
+    0x86: "Temperature too high",
+    0x87: "Temperature too low",
+    0x88: "Vehicle speed too high",
+    0x89: "Vehicle speed too low",
+    0x8A: "Throttle pedal too high",
+    0x8B: "Throttle pedal too low",
     0x8C: "Transmission range not in neutral",
     0x8D: "Transmission range not in gear"
 }
+
 
 def decode_uds(data):
     first_byte = data[0]
 
     if first_byte in UDS_SID:
-        return (UDS_SID[first_byte])
-    elif first_byte-0x40 in UDS_SID:
-        return ("Positiv Response to {" + UDS_SID[first_byte-0x40] + "}")
+        return UDS_SID[first_byte]
+    elif first_byte - 0x40 in UDS_SID:
+        return "Positive Response to {" + UDS_SID[first_byte - 0x40] + "}"
     elif first_byte == 0x7F:
         second_byte = data[1]
         third_byte = data[2]
-        return ("negative Response to {" + UDS_SID[second_byte] + "} : {" + UDS_NRC[third_byte] + "}")
+        request = UDS_SID.get(second_byte, hex(second_byte))
+        nrc = UDS_NRC.get(third_byte, hex(third_byte))
+        return "Negative Response to {" + request + "} : {" + nrc + "}"
     return ""
-
-
-
